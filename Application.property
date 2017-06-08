@@ -1,0 +1,5 @@
+dev.host = nn01.itversity.com  - Connection host name
+dev.port = 3306     -- connection port number
+dev.db = hr          -- Connect to required DB in the JDBC connection
+dev.user = hr_ro     -- valid username that has access to DB
+dev.pw = itversity   -- valid password
