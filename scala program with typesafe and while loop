@@ -1,0 +1,73 @@
+************ create a Scala program to connect to Application.property using typesafe************
+// connect to db and retreive the fullname, lastname, salary, commission pct value of all employees in the DB - Hr"
+
+/**
+  * Created by viswa on 6/7/17.
+  */
+
+import java.sql.DriverManager  // use driver manager to establish the connectivity of sql JDBC
+import com.typesafe.config._   // use typesafe config (all files - ._) 
+
+
+case class EmployeesComission(first_name : String,
+                              last_name : String,
+                              salary : Double,
+                              commission_pct : Double) {
+  override def toString(): String =
+  {
+    s"first_name :  " + first_name + "; " + "last_name :  " + last_name +
+      "; " + "Commission Amount:  " + getCommissionAmount() + ";"
+  }
+
+  def getCommissionAmount(): Any =
+  {
+
+    if (commission_pct  == null)
+    {
+      " NOT ELIGIBLE "
+    }
+    else salary * commission_pct
+  }
+}
+
+object ComissionAmount
+{
+  def main (args:Array[String]) : Unit =
+  {
+
+
+    val props = ConfigFactory.load()                   // load all the types of property files say json, conf, properties
+    val driver = "com.mysql.jdbc.Driver"
+
+    //define the host, port, user, passwords connection from application.properties assigned in variable "props"
+
+    val host = props.getConfig(args(0)).getString("host")   // get the host path
+    val port = props.getConfig(args(0)).getString("port")
+    val db  = props.getConfig(args(0)).getString("db")
+
+// typesafe - fetch the connectivity data from Application.properties file.
+
+    val url = "jdbc:mysql://" + host +":" + port + "/" + db
+    val username = props.getConfig(args(0)).getString("user")
+    val password = props.getConfig(args(0)).getString("pw")
+
+    Class.forName(driver);
+    val connection = DriverManager.getConnection(url, username, password)
+    val statement = connection.createStatement()
+    val resultSet = statement.executeQuery(s"SELECT first_name, last_name, " +
+      " salary, commission_pct From employees")
+
+    while (resultSet.next())
+    {
+
+      val e = EmployeesComission(resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getDouble("salary"),
+                        resultSet.getDouble("commission_pct"))
+      println(e)
+    }
+
+
+
+  }
+}
